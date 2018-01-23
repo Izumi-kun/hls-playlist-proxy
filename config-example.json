@@ -1,0 +1,12 @@
+{
+    "playlists": [
+        {
+            "name": "main",
+            "url": "http://url.to.playlist/index.m3u8"
+        }
+    ],
+    "ports": {
+        "playlists": 8080,
+        "stats": 8081
+    }
+}

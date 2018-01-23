@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Viewers</title>
+
+</head>
+<body>
+<h1>Viewers</h1>
+
+<div id="count" style="font-size: 60px"></div>
+
+<script type="application/javascript">
+  var socket = new WebSocket('ws://localhost:8081');
+
+  socket.onmessage = function (event) {
+    document.getElementById('count').innerHTML = event.data;
+  };
+  window.addEventListener('beforeunload', function () {
+    socket.close();
+  });
+</script>
+
+</body>
+</html>
