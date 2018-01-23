@@ -1,12 +1,14 @@
 var Promise = require('promise');
 var Stream = require('./stream');
 var fs = new require('fs');
-var express = require("express");
+var express = require('express');
+var cors = require('cors');
 var sha1 = require('sha1');
 
 var config = JSON.parse(fs.readFileSync('./config.json'));
 
 var app = express();
+app.use(cors());
 app.enable('trust proxy');
 var server = app.listen(config.ports['playlists']);
 
