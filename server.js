@@ -45,7 +45,10 @@ app.param('stream', function (req, res, next, id) {
 });
 
 app.get('/stream/:stream/index.m3u8', function (req, res) {
-  var userId = sha1(req.ip + req.get('user-agent'));
+  var userId = sha1(req.ip
+    + req.get('User-Agent')
+    + req.get('Accept-Language')
+  );
   if (!clients[userId]) {
     console.log('Viewer connected: ' + req.ip);
   }
