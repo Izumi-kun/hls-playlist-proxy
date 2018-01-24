@@ -6,18 +6,13 @@ var cors = require('cors');
 var sha1 = require('sha1');
 
 var config = JSON.parse(fs.readFileSync('./config.json'));
-
-var app = express();
-app.use(cors());
-app.enable('trust proxy');
-var server = app.listen(config.ports['playlists']);
+var playlistsPort = config.ports['playlists'];
 
 var streams = {};
 var clients = {};
 
 config['playlists'].forEach(function (streamConfig) {
   var stream = new Stream(streamConfig);
-  console.log("http://localhost:" + config.ports['playlists'] + "/stream/" + stream.name + "/index.m3u8");
   streams[stream.name] = stream;
   stream.refresh().then(function () {
     stream.intervalRefresh(2000);
@@ -26,6 +21,17 @@ config['playlists'].forEach(function (streamConfig) {
     setTimeout(function () {
       stream.intervalRefresh(2000);
     }, 10000);
+  });
+});
+
+var app = express();
+app.use(cors());
+app.enable('trust proxy');
+var server = app.listen(playlistsPort, function () {
+  console.log('Playlist server started on port: ' + playlistsPort);
+  console.log('Urls to playlists:');
+  Object.keys(streams).map(function (name) {
+    console.log(" - http://your.host:" + playlistsPort + "/stream/" + name + "/index.m3u8");
   });
 });
 
@@ -101,7 +107,7 @@ var wsServer = new WebSocket.Server({
   clientTracking: true,
   port: config.ports['stats']
 }, function () {
-  console.log('Stats started on port: ' + config.ports['stats']);
+  console.log('Stats websocket server started on port: ' + config.ports['stats']);
 });
 
 wsServer.on('connection', function (ws) {
