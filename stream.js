@@ -1,7 +1,6 @@
 var Promise = require('promise');
 var request = require('request');
-var path = require('path');
-var url = require('url');
+var URLToolkit = require('url-toolkit');
 
 var i = 0;
 
@@ -10,7 +9,6 @@ function Stream(config) {
   this.name = config.name || ('s' + ++i);
   this.url = config.url;
   this.content = null;
-  this.baseUrl = path.dirname(this.url); // mad skills
 
   this.intervalRefresh = function (interval) {
     setTimeout(function () {
@@ -41,7 +39,9 @@ Stream.prototype.refresh = function () {
     });
   });
   promise.then(function (value) {
-    self.content = value.replace(/(.*\.ts)/g, self.baseUrl + "/$1");
+    self.content = value.replace(/.*\.ts/g, function (match) {
+      return URLToolkit.buildAbsoluteURL(self.url, './' + match);
+    });
     return self.content;
   });
   return promise;
