@@ -14,13 +14,9 @@ var clients = {};
 config['playlists'].forEach(function (streamConfig) {
   var stream = new Stream(streamConfig);
   streams[stream.name] = stream;
-  stream.refresh().then(function () {
-    stream.intervalRefresh(2000);
-  }, function (reason) {
+  stream.refresh().then(stream.intervalRefresh, function (reason) {
     console.log('"' + stream.name + '" stream seems down (' + reason + ')');
-    setTimeout(function () {
-      stream.intervalRefresh(2000);
-    }, 10000);
+    setTimeout(stream.intervalRefresh, 10000);
   });
 });
 
@@ -61,7 +57,7 @@ app.get('/stream/:stream/index.m3u8', function (req, res) {
 });
 
 var viewers = 0;
-var updateViewers = function () {
+setInterval(function () {
   var cnt = 0;
   var now = Date.now();
   Object.keys(clients).map(function (key) {
@@ -77,9 +73,7 @@ var updateViewers = function () {
     viewers = cnt;
     broadcast(cnt);
   }
-};
-
-setInterval(updateViewers, 500);
+}, 500);
 
 var shutdown = function () {
   console.log('Received kill signal, shutting down gracefully.');

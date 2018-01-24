@@ -9,15 +9,12 @@ function Stream(config) {
   this.name = config.name || ('s' + ++i);
   this.url = config.url;
   this.content = null;
+  this.refreshInterval = config.refreshInterval || 1500;
 
-  this.intervalRefresh = function (interval) {
+  this.intervalRefresh = function () {
     setTimeout(function () {
-      self.refresh().then(function () {
-        self.intervalRefresh(interval);
-      }, function () {
-        self.intervalRefresh(interval)
-      });
-    }, interval);
+      self.refresh().then(self.intervalRefresh, self.intervalRefresh);
+    }, self.refreshInterval);
   }
 }
 
